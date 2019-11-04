@@ -77,8 +77,8 @@ func Cancel(reqDto ReqCancelDto, custDto ReqCustomerDto) (int, RespBase, error) 
 	return statusCode, respDto, nil
 }
 
-func Query(reqDto ReqQueryDto, custDto ReqCustomerDto) (int, RespBase, error) {
-	var respDto RespBase
+func Query(reqDto ReqQueryDto, custDto ReqCustomerDto) (int, RespQueryDto, error) {
+	var respDto RespQueryDto
 	reqDto.ServiceType = "TMS_TRACE_QUERY"
 	bizData, err := xml.Marshal(reqDto.BizData)
 	if err != nil {
