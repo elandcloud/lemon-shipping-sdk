@@ -3,6 +3,10 @@ package jd
 /*
 request or response parameter
 */
+type ReqECreateDto struct {
+	ReqBase
+	RequestData ReqECreateDataDto `json:"360buy_param_json,omitempty"`
+}
 type ReqCreateDto struct {
 	ReqBase
 	RequestData ReqCreateDataDto `json:"360buy_param_json,omitempty"`
@@ -15,15 +19,20 @@ type ReqCancelDto struct {
 	ReqBase
 	RequestData ReqCancelDataDto `json:"360buy_param_json,omitempty"`
 }
+type ReqCancelWayBillDto struct {
+	ReqBase
+	RequestData ReqCancelWayBillDataDto `json:"360buy_param_json,omitempty"`
+}
 
-type RespCreateDto struct {
-	Response RespCreateResponse `json:"jingdong_ldop_waybill_receive_response"`
+type RespECreateDto struct {
+	Response      RespECreateResponse `json:"jingdong_ldop_waybill_receive_responce"`
+	ErrorResponse ErrorResponse       `json:"error_response"`
 }
-type RespCreateResponse struct {
-	Result RespCreateResult `json:"receiveorderinfo_result"`
+type RespECreateResponse struct {
+	Result RespECreateResult `json:"receiveorderinfo_result"`
 }
-type RespCreateResult struct {
-	ResultCode      int            `json:"resultCode,omitempty"`
+type RespECreateResult struct {
+	ResultCode      int            `json:"resultCode"`
 	ResultMessage   string         `json:"resultMessage,omitempty"`
 	OrderId         string         `json:"orderId,omitempty"`
 	DeliveryId      string         `json:"deliveryId,omitempty"`
@@ -31,8 +40,22 @@ type RespCreateResult struct {
 	PreSortResult   *PreSortResult `json:"preSortResult,omitempty"`
 	TransType       int            `json:"transType,omitempty"`
 }
+type RespCreateDto struct {
+	Response      RespCreateResponse `json:"jingdong_etms_waybill_send_responce"`
+	ErrorResponse ErrorResponse      `json:"error_response"`
+}
+type RespCreateResponse struct {
+	Result RespCreateResult `json:"resultInfo"`
+}
+type RespCreateResult struct {
+	Code       int64  `json:"code"`
+	Message    string `json:"message,omitempty"`
+	OrderId    string `json:"orderId,omitempty"`
+	DeliveryId string `json:"deliveryId,omitempty"`
+}
 type RespQueryDto struct {
-	Response RespQueryResponse `json:"jingdong_ldop_receive_trace_get_response"`
+	Response      RespQueryResponse `json:"jingdong_ldop_receive_trace_get_responce"`
+	ErrorResponse ErrorResponse     `json:"error_response"`
 }
 type RespQueryResponse struct {
 	Result RespQueryResult `json:"querytrace_result"`
@@ -43,10 +66,18 @@ type RespQueryResult struct {
 	Data     []TraceDTO `json:"data,omitempty"`
 }
 type RespCancelDto struct {
-	Response RespCancelResponse `json:"jingdong_ldop_pickup_cancel_response"`
+	Response      RespCancelResponse `json:"jingdong_ldop_pickup_cancel_responce"`
+	ErrorResponse ErrorResponse      `json:"error_response"`
 }
 type RespCancelResponse struct {
 	Result RespCancelResult `json:"returnType"`
+}
+type RespCancelWayBillDto struct {
+	Response      RespCancelWayBillResponse `json:"jingdong_ldop_delivery_provider_cancelWayBill_responce"`
+	ErrorResponse ErrorResponse             `json:"error_response"`
+}
+type RespCancelWayBillResponse struct {
+	Result RespCancelResult `json:"responseDTO"`
 }
 type RespCancelResult struct {
 	StatusMessage string `json:"statusMessage,omitempty"`
@@ -66,7 +97,7 @@ type ReqBase struct {
 	V           string `json:"v,omitempty"`
 }
 
-type ReqCreateDataDto struct {
+type ReqECreateDataDto struct {
 	SalePlat     string `json:"salePlat,omitempty"`
 	CustomerCode string `json:"customerCode,omitempty"`
 	OrderId      string `json:"orderId,omitempty"`
@@ -139,6 +170,80 @@ type ReqCreateDataDto struct {
 	BoxCode             []string `json:"boxCode,omitempty"`
 	FileUrl             string   `json:"fileUrl,omitempty"`
 }
+type ReqCreateDataDto struct {
+	DeliveryId       string `json:"deliveryId,omitempty"`
+	SalePlat         string `json:"salePlat,omitempty"`
+	CustomerCode     string `json:"customerCode,omitempty"`
+	OrderId          string `json:"orderId,omitempty"`
+	ThrOrderId       string `json:"thrOrderId,omitempty"`
+	SelfPrintWayBill int    `json:"selfPrintWayBill,omitempty"`
+	PickMethod       string `json:"pickMethod,omitempty"`
+	PackageRequired  string `json:"packageRequired,omitempty"`
+
+	SenderName     string `json:"senderName,omitempty"`
+	SenderAddress  string `json:"senderAddress,omitempty"`
+	SenderTel      string `json:"senderTel,omitempty"`
+	SenderMobile   string `json:"senderMobile,omitempty"`
+	SenderPostcode string `json:"senderPostcode,omitempty"`
+
+	ReceiveName    string `json:"receiveName,omitempty"`
+	ReceiveAddress string `json:"receiveAddress,omitempty"`
+	Province       string `json:"province,omitempty"`
+	City           string `json:"city,omitempty"`
+	County         string `json:"county,omitempty"`
+	Town           string `json:"town,omitempty"`
+	ProvinceId     int    `json:"provinceId,omitempty"`
+	CityId         int    `json:"cityId,omitempty"`
+	CountyId       int    `json:"countyId,omitempty"`
+	TownId         int    `json:"townId,omitempty"`
+	SiteType       int    `json:"siteType,omitempty"`
+	SiteId         int    `json:"siteId,omitempty"`
+	SiteName       string `json:"siteName,omitempty"`
+	ReceiveTel     string `json:"receiveTel,omitempty"`
+	ReceiveMobile  string `json:"receiveMobile,omitempty"`
+	Postcode       string `json:"postcode,omitempty"`
+
+	PackageCount         int     `json:"packageCount,omitempty"`
+	Weight               float64 `json:"weight,omitempty"`
+	VloumLong            float64 `json:"vloumLong,omitempty"`
+	VloumWidth           float64 `json:"vloumWidth,omitempty"`
+	VloumHeight          float64 `json:"vloumHeight,omitempty"`
+	Vloumn               float64 `json:"vloumn,omitempty"`
+	Description          string  `json:"description,omitempty"`
+	CollectionValue      int     `json:"collectionValue,omitempty"`
+	CollectionMoney      float64 `json:"collectionMoney,omitempty"`
+	GuaranteeValue       int     `json:"guaranteeValue,omitempty"`
+	GuaranteeValueAmount float64 `json:"guaranteeValueAmount,omitempty"`
+	SignReturn           int     `json:"signReturn,omitempty"`
+	Aging                int     `json:"aging,omitempty"`
+	TransType            int     `json:"transType,omitempty"`
+	Remark               string  `json:"remark,omitempty"`
+	GoodsType            int     `json:"goodsType,omitempty"`
+	OrderType            int     `json:"orderType,omitempty"`
+	ShopCode             string  `json:"shopCode,omitempty"`
+	OrderSendTime        string  `json:"orderSendTime,omitempty"`
+
+	WarehouseCode       string  `json:"warehouseCode,omitempty"`
+	AreaProvId          int     `json:"areaProvId,omitempty"`
+	AreaCityId          int     `json:"areaCityId,omitempty"`
+	ShipmentStartTime   string  `json:"shipmentStartTime,omitempty"`
+	ShipmentEndTime     string  `json:"shipmentEndTime,omitempty"`
+	IdNumber            string  `json:"idNumber,omitempty"`
+	AddedService        string  `json:"addedService,omitempty"`
+	ExtendField1        string  `json:"extendField1,omitempty"`
+	ExtendField2        string  `json:"extendField2,omitempty"`
+	ExtendField3        string  `json:"extendField3,omitempty"`
+	ExtendField4        string  `json:"extendField4,omitempty"`
+	ExtendField5        string  `json:"extendField5,omitempty"`
+	SenderCompany       string  `json:"senderCompany,omitempty"`
+	ReceiveCompany      string  `json:"receiveCompany,omitempty"`
+	Goods               string  `json:"goods,omitempty"`
+	GoodsCount          int     `json:"goodsCount,omitempty"`
+	PromiseTimeType     int     `json:"promiseTimeType,omitempty"`
+	Freight             float64 `json:"freight,omitempty"`
+	UnpackingInspection string  `json:"unpackingInspection,omitempty"`
+	FileUrl             string  `json:"fileUrl,omitempty"`
+}
 type ReqQueryDataDto struct {
 	CustomerCode string `json:"customerCode,omitempty"`
 	WaybillCode  string `json:"waybillCode,omitempty"`
@@ -150,6 +255,15 @@ type ReqCancelDataDto struct {
 	Source        string `json:"source,omitempty"`
 	CustomerCode  string `json:"customerCode,omitempty"`
 }
+type ReqCancelWayBillDataDto struct {
+	UserPin      string `json:"userPin,omitempty"`
+	CancelReason string `json:"cancelReason,omitempty"`
+	OperatorName string `json:"operatorName,omitempty"`
+	WaybillCode  string `json:"waybillCode,omitempty"`
+	Source       string `json:"source,omitempty"`
+	CustomerCode string `json:"customerCode,omitempty"`
+}
+
 type ReqCustomerDto struct {
 	Url       string `json:"url,omitempty"`
 	AppSecret string `json:"appSecret,omitempty"`
@@ -181,4 +295,13 @@ type TraceDTO struct {
 	WaybillCode string `json:"waybillCode,omitempty"`
 	Courier     string `json:"courier,omitempty"`
 	CourierTel  string `json:"courierTel,omitempty"`
+}
+
+type ErrorResponse struct {
+	Response Response `json:"error_response,omitempty"`
+}
+type Response struct {
+	Code   string `json:"code,omitempty"`
+	ZhDesc string `json:"zh_desc,omitempty"`
+	EnDesc string `json:"en_desc,omitempty"`
 }

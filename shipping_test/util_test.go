@@ -41,3 +41,17 @@ var springDto = struct {
 	Code: os.Getenv("SPRING_CODE"),
 	Pwd:  os.Getenv("SPRING_PWD"),
 }
+
+var jdDto = struct {
+	Url          string
+	AppKey       string
+	AppSecret    string
+	AccessToken  string
+	CustomerCode string
+}{
+	Url:          "https://api.jd.com/routerjson",
+	AppKey:       os.Getenv("JD_APPKEY"),
+	AppSecret:    os.Getenv("JD_APPSECRET"),
+	AccessToken:  os.Getenv("JD_ACCESSTOKEN"),
+	CustomerCode: os.Getenv("JD_CUSTOMERCODE"),
+}
