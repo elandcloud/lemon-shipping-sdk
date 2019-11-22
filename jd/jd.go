@@ -7,10 +7,11 @@ import (
 
 	"github.com/pangpanglabs/goutils/httpreq"
 	"github.com/relax-space/go-kit/base"
+	"github.com/sirupsen/logrus"
 )
 
-func Create(reqDto ReqCreateDto, custDto ReqCustomerDto) (int, RespCreateDto, error) {
-	var respDto RespCreateDto
+func ECreate(reqDto ReqECreateDto, custDto ReqCustomerDto) (int, RespECreateDto, error) {
+	var respDto RespECreateDto
 	reqDto.Method = "jingdong.ldop.waybill.receive"
 	reqDto.Timestamp = time.Now().UTC().Add(8 * time.Hour).Format("2006-01-02 15:04:05")
 	var err error
@@ -28,16 +29,73 @@ func Create(reqDto ReqCreateDto, custDto ReqCustomerDto) (int, RespCreateDto, er
 	if err != nil {
 		return http.StatusBadRequest, respDto, err
 	}
+	mapData["sign"] = reqDto.Sign
+	url := custDto.Url + "?" + base.JoinMapObjectEncode(mapData)
+	logrus.WithField("url", url).Info("url")
+	req := httpreq.New(http.MethodGet, url, nil, func(httpReq *httpreq.HttpReq) error {
+		httpReq.ReqDataType = httpreq.FormType
+		return nil
+	})
 
-	req := httpreq.New(http.MethodGet, custDto.Url, base.JoinMapObjectEncode(mapData),
-		func(httpReq *httpreq.HttpReq) error {
-			httpReq.ReqDataType = httpreq.FormType
-			return nil
-		})
-	statusCode, err := req.Call(&respDto)
+	var respInterface interface{}
+	statusCode, err := req.Call(&respInterface)
 	if err != nil {
 		return http.StatusInternalServerError, respDto, err
 	}
+	err = Decode(respInterface, &respDto)
+	if err != nil {
+		return statusCode, respDto, err
+	}
+	errorResponse := ErrorResponse{}
+	err = Decode(respInterface, &errorResponse)
+	if err != nil {
+		return statusCode, respDto, err
+	}
+	respDto.ErrorResponse = errorResponse
+	return statusCode, respDto, nil
+}
+
+func Create(reqDto ReqCreateDto, custDto ReqCustomerDto) (int, RespCreateDto, error) {
+	var respDto RespCreateDto
+	reqDto.Method = "jingdong.etms.waybill.send"
+	reqDto.Timestamp = time.Now().UTC().Add(8 * time.Hour).Format("2006-01-02 15:04:05")
+	var err error
+	jsonBytes, err := json.Marshal(reqDto)
+	if err != nil {
+		return http.StatusBadRequest, respDto, err
+	}
+	var mapData = make(map[string]interface{})
+	err = json.Unmarshal(jsonBytes, &mapData)
+	if err != nil {
+		return http.StatusBadRequest, respDto, err
+	}
+
+	reqDto.Sign, err = SignJD(mapData, custDto.AppSecret)
+	if err != nil {
+		return http.StatusBadRequest, respDto, err
+	}
+	mapData["sign"] = reqDto.Sign
+	url := custDto.Url + "?" + base.JoinMapObjectEncode(mapData)
+	logrus.WithField("url", url).Info("url")
+	req := httpreq.New(http.MethodGet, url, nil, func(httpReq *httpreq.HttpReq) error {
+		httpReq.ReqDataType = httpreq.FormType
+		return nil
+	})
+	var respInterface interface{}
+	statusCode, err := req.Call(&respInterface)
+	if err != nil {
+		return http.StatusInternalServerError, respDto, err
+	}
+	err = Decode(respInterface, &respDto)
+	if err != nil {
+		return statusCode, respDto, err
+	}
+	errorResponse := ErrorResponse{}
+	err = Decode(respInterface, &errorResponse)
+	if err != nil {
+		return statusCode, respDto, err
+	}
+	respDto.ErrorResponse = errorResponse
 	return statusCode, respDto, nil
 }
 
@@ -61,15 +119,74 @@ func Cancel(reqDto ReqCancelDto, custDto ReqCustomerDto) (int, RespCancelDto, er
 	if err != nil {
 		return http.StatusBadRequest, respDto, err
 	}
+	mapData["sign"] = reqDto.Sign
 
-	req := httpreq.New(http.MethodGet, custDto.Url, reqDto, func(httpReq *httpreq.HttpReq) error {
+	url := custDto.Url + "?" + base.JoinMapObjectEncode(mapData)
+	logrus.WithField("url", url).Info("url")
+	req := httpreq.New(http.MethodGet, url, nil, func(httpReq *httpreq.HttpReq) error {
 		httpReq.ReqDataType = httpreq.FormType
 		return nil
 	})
-	statusCode, err := req.Call(&respDto)
+	var respInterface interface{}
+	statusCode, err := req.Call(&respInterface)
 	if err != nil {
 		return http.StatusInternalServerError, respDto, err
 	}
+	err = Decode(respInterface, &respDto)
+	if err != nil {
+		return statusCode, respDto, err
+	}
+	errorResponse := ErrorResponse{}
+	err = Decode(respInterface, &errorResponse)
+	if err != nil {
+		return statusCode, respDto, err
+	}
+	respDto.ErrorResponse = errorResponse
+	return statusCode, respDto, nil
+}
+func CancelWayBill(reqDto ReqCancelWayBillDto, custDto ReqCustomerDto) (int, RespCancelWayBillDto, error) {
+	var respDto RespCancelWayBillDto
+	reqDto.Method = "jingdong.ldop.delivery.provider.cancelWayBill"
+	reqDto.Timestamp = time.Now().UTC().Add(8 * time.Hour).Format("2006-01-02 15:04:05")
+
+	var err error
+	jsonBytes, err := json.Marshal(reqDto)
+	if err != nil {
+		return http.StatusBadRequest, respDto, err
+	}
+	var mapData = make(map[string]interface{})
+	err = json.Unmarshal(jsonBytes, &mapData)
+	if err != nil {
+		return http.StatusBadRequest, respDto, err
+	}
+
+	reqDto.Sign, err = SignJD(mapData, custDto.AppSecret)
+	if err != nil {
+		return http.StatusBadRequest, respDto, err
+	}
+	mapData["sign"] = reqDto.Sign
+
+	url := custDto.Url + "?" + base.JoinMapObjectEncode(mapData)
+	logrus.WithField("url", url).Info("url")
+	req := httpreq.New(http.MethodGet, url, nil, func(httpReq *httpreq.HttpReq) error {
+		httpReq.ReqDataType = httpreq.FormType
+		return nil
+	})
+	var respInterface interface{}
+	statusCode, err := req.Call(&respInterface)
+	if err != nil {
+		return http.StatusInternalServerError, respDto, err
+	}
+	err = Decode(respInterface, &respDto)
+	if err != nil {
+		return statusCode, respDto, err
+	}
+	errorResponse := ErrorResponse{}
+	err = Decode(respInterface, &errorResponse)
+	if err != nil {
+		return statusCode, respDto, err
+	}
+	respDto.ErrorResponse = errorResponse
 	return statusCode, respDto, nil
 }
 
@@ -92,15 +209,28 @@ func Query(reqDto ReqQueryDto, custDto ReqCustomerDto) (int, RespQueryDto, error
 	if err != nil {
 		return http.StatusBadRequest, respDto, err
 	}
+	mapData["sign"] = reqDto.Sign
 
-	req := httpreq.New(http.MethodGet, custDto.Url, reqDto, func(httpReq *httpreq.HttpReq) error {
+	url := custDto.Url + "?" + base.JoinMapObjectEncode(mapData)
+	req := httpreq.New(http.MethodGet, url, nil, func(httpReq *httpreq.HttpReq) error {
 		httpReq.ReqDataType = httpreq.FormType
 		return nil
 	})
-	statusCode, err := req.Call(&respDto)
+	var respInterface interface{}
+	statusCode, err := req.Call(&respInterface)
 	if err != nil {
 		return http.StatusInternalServerError, respDto, err
 	}
+	err = Decode(respInterface, &respDto)
+	if err != nil {
+		return statusCode, respDto, err
+	}
+	errorResponse := ErrorResponse{}
+	err = Decode(respInterface, &errorResponse)
+	if err != nil {
+		return statusCode, respDto, err
+	}
+	respDto.ErrorResponse = errorResponse
 
 	return statusCode, respDto, nil
 }
